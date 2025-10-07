@@ -1,0 +1,173 @@
+my_cartesian_motion_controller:
+    type: "position_controllers/CartesianMotionController"
+    end_effector_link: "right_hand"
+    robot_base_link: "right_arm_base_link"
+    target_frame_topic: "target_frame"
+    joints:
+    - right_j0
+    - right_j1
+    - right_j2
+    - right_j3
+    - right_j4
+    - right_j5
+    - right_j6
+
+    pd_gains:
+        trans_x: {p: 10.0}
+        trans_y: {p: 10.0}
+        trans_z: {p: 10.0}
+        rot_x: {p: 1.0}
+        rot_y: {p: 1.0}
+        rot_z: {p: 1.0}
+
+my_cartesian_force_controller:
+    type: "position_controllers/CartesianForceController"
+    end_effector_link: "right_l6"
+    robot_base_link: "right_arm_base_link"
+    ft_sensor_ref_link: "right_l6"
+    joints:
+    - right_j0
+    - right_j1
+    - right_j2
+    - right_j3
+    - right_j4
+    - right_j5
+    - right_j6
+
+    solver:
+        error_scale: 0.5
+
+    pd_gains:
+        trans_x: {p: 0.05}
+        trans_y: {p: 0.05}
+        trans_z: {p: 0.05}
+        rot_x: {p: 1.5}
+        rot_y: {p: 1.5}
+        rot_z: {p: 1.5}
+
+
+my_cartesian_compliance_controller:
+    type: "position_controllers/CartesianComplianceController"
+    end_effector_link: "right_hand"
+    robot_base_link: "right_arm_base_link"
+    ft_sensor_ref_link: "right_hand"
+    compliance_ref_link: "right_hand"
+    target_frame_topic: "target_frame"
+    joints:
+    - right_j0
+    - right_j1
+    - right_j2
+    - right_j3
+    - right_j4
+    - right_j5
+    - right_j6
+
+    stiffness:  # w.r.t. compliance_ref_link
+        trans_x: 500
+        trans_y: 500
+        trans_z: 500
+        rot_x: 20
+        rot_y: 20
+        rot_z: 20
+
+    solver:
+        error_scale: 0.5
+
+    pd_gains:
+        trans_x: {p: 0.05}
+        trans_y: {p: 0.05}
+        trans_z: {p: 0.05}
+        rot_x: {p: 1.50}
+        rot_y: {p: 1.50}
+        rot_z: {p: 1.50}
+
+my_motion_control_handle:
+   type: "cartesian_controllers/MotionControlHandle"
+   end_effector_link: "right_hand"
+   robot_base_link: "right_arm_base_link"
+   target_frame_topic: "/my_cartesian_motion_controller/target_frame"
+   joints:
+    - right_j0
+    - right_j1
+    - right_j2
+    - right_j3
+    - right_j4
+    - right_j5
+    - right_j6
+
+my_joint_to_cartesian_controller:
+    type: "cartesian_controllers/JointControllerAdapter"
+    end_effector_link: "right_hand"
+    robot_base_link: "right_arm_base_link"
+    target_frame_topic: "/my_cartesian_motion_controller/target_frame"
+    joints:
+    - right_j0
+    - right_j1
+    - right_j2
+    - right_j3
+    - right_j4
+    - right_j5
+    - right_j6
+
+    joint_limits:
+      right_j0:
+        has_velocity_limits: true
+        max_velocity: 3.15
+        has_acceleration_limits: true
+        max_acceleration: 10.0
+      right_j1:
+        has_velocity_limits: true
+        max_velocity: 3.15
+        has_acceleration_limits: true
+        max_acceleration: 10.0
+      right_j2:
+        has_velocity_limits: true
+        max_velocity: 3.15
+        has_acceleration_limits: true
+        max_acceleration: 10.0
+      right_j3:
+        has_velocity_limits: true
+        max_velocity: 3.2
+        has_acceleration_limits: true
+        max_acceleration: 10.0
+      right_j4:
+        has_velocity_limits: true
+        max_velocity: 3.2
+        has_acceleration_limits: true
+        max_acceleration: 10.0
+      right_j5:
+        has_velocity_limits: true
+        max_velocity: 3.2
+        has_acceleration_limits: true
+        max_acceleration: 10.0
+      right_j6:
+        has_velocity_limits: true
+        max_velocity: 3.2
+        has_acceleration_limits: true
+        max_acceleration: 10.0
+
+my_joint_to_cartesian_controller/joint_trajectory_controller:
+    type: "position_controllers/JointTrajectoryController"
+    joints:
+    - right_j0
+    - right_j1
+    - right_j2
+    - right_j3
+    - right_j4
+    - right_j5
+    - right_j6
+
+joint_trajectory_controller:
+    type: "position_controllers/JointTrajectoryController"
+    joints:
+    - right_j0
+    - right_j1
+    - right_j2
+    - right_j3
+    - right_j4
+    - right_j5
+    - right_j6
+
+joint_state_controller:
+    type: joint_state_controller/JointStateController
+    publish_rate: 50
