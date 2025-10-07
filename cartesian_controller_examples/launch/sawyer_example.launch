@@ -1,0 +1,50 @@
+<launch>
+
+	<!-- This argument loads the electric gripper, for example electric_gripper:=true -->
+        <arg name="electric_gripper" default="true"/>
+        <!-- This argument loads sawyer's pedestal URDF -->
+        <arg name="pedestal" default="true"/>
+        <!-- This argument fixes the robot statically to the world -->
+        <arg name="static" default="true"/>
+ 
+        <!-- Load the URDF into the ROS Parameter Server -->
+        <!-- This xacro will pull in sawyer.urdf.xacro, and right_end_effector.urdf.xacro
+        Note: if you set this to false, you MUST have set the robot_description prior
+             to launching sawyer_world -->
+        <arg name="load_robot_description" default="true"/>
+        <param if="$(arg load_robot_description)" name="robot_description"
+                command="$(find xacro)/xacro --inorder $(find sawyer_description)/urdf/sawyer.urdf.xacro
+                gazebo:=true electric_gripper:=$(arg electric_gripper)
+                pedestal:=$(arg pedestal) static:=$(arg static)"/>
+
+        <!-- Load Parameters to the ROS Parameter Server -->
+        <rosparam command="load" file="$(find sawyer_gazebo)/config/config.yaml" />
+        <rosparam command="load" file="$(find sawyer_description)/params/named_poses.yaml" />
+        <rosparam command="load" file="$(find sawyer_gazebo)/config/acceleration_limits.yaml" />
+
+        <param name="robot/limb/right/root_name" value="base" />
+        <param if="$(arg electric_gripper)" name="robot/limb/right/tip_name"
+                value="right_gripper_tip" />
+        <param unless="$(arg electric_gripper)" name="robot/limb/right/tip_name"
+                value="right_hand" />
+
+        <param name="robot/limb/right/camera_name" value="right_hand_camera" />
+        <param if="$(arg electric_gripper)"     name="robot/limb/right/gravity_tip_name"
+                value="right_gripper_tip" />
+        <param unless="$(arg electric_gripper)" name="robot/limb/right/gravity_tip_name"
+                value="right_hand" />
+
+	<!-- Send fake joint values -->
+	<node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+		<param name="use_gui" value="false"/>
+	</node>
+
+	<!-- Combine joint values -->
+	<node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
+	
+	<!-- Visualization -->
+        <node name="rviz" pkg="rviz" type="rviz" respawn="false" output="screen" args="-d $(find cartesian_controller_examples)/launch/sawyer_rviz.rviz" />
+
+
+
+</launch>
